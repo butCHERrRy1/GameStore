@@ -1,0 +1,62 @@
+@model CartViewModel
+@{
+    ViewData["Title"] = "Корзина";
+}
+
+<h1 class="mb-4">Корзина</h1>
+
+@if (!Model.Items.Any())
+{
+    <div class="alert alert-info">
+        Корзина пуста. <a asp-controller="Catalog" asp-action="Index">Перейти в каталог</a>.
+    </div>
+}
+else
+{
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Игра</th>
+                <th>Платформа</th>
+                <th class="text-end">Цена</th>
+                <th class="text-center">Кол-во</th>
+                <th class="text-end">Сумма</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.GameTitle</td>
+                    <td>@item.PlatformName</td>
+                    <td class="text-end">@item.Price.ToString("C")</td>
+                    <td class="text-center">@item.Quantity</td>
+                    <td class="text-end">@item.Total.ToString("C")</td>
+                    <td class="text-end">
+                        <form asp-action="Remove" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="4" class="text-end">Итого:</th>
+                <th class="text-end">@Model.TotalPrice.ToString("C")</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="d-flex gap-2">
+        <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline-secondary">Продолжить покупки</a>
+        <form asp-action="Clear" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline-danger">Очистить корзину</button>
+        </form>
+    </div>
+}

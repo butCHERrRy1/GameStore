@@ -1,0 +1,46 @@
+@model GameStore.Models.Product
+@{
+    ViewData["Title"] = Model.Game.Title;
+}
+
+<a asp-action="Index" class="btn btn-link mb-3">&larr; Назад в каталог</a>
+
+<div class="row">
+    <div class="col-md-5">
+        @{
+            var img = Model.Game.Images.FirstOrDefault()?.Url ?? "/images/placeholder.jpg";
+        }
+        <img src="@img" class="img-fluid rounded" alt="@Model.Game.Title" />
+    </div>
+    <div class="col-md-7">
+        <h1>@Model.Game.Title</h1>
+        <p class="text-muted">Платформа: @Model.Platform.Name</p>
+        <p>@Model.Game.Description</p>
+
+        <ul class="list-unstyled">
+            <li><strong>Дата выхода:</strong> @Model.Game.ReleaseDate.ToString("dd.MM.yyyy")</li>
+            <li>
+                <strong>Жанры:</strong>
+                @string.Join(", ", Model.Game.GameGenres.Select(gg => gg.Genre.Name))
+            </li>
+            <li>
+                <strong>Издатели:</strong>
+                @string.Join(", ", Model.Game.GamePublishers.Select(gp => gp.Publisher.Name))
+            </li>
+            <li>
+                <strong>Разработчики:</strong>
+                @string.Join(", ", Model.Game.GameDevelopers.Select(gd => gd.Developer.Name))
+            </li>
+            <li><strong>В наличии:</strong> @Model.Stock шт.</li>
+        </ul>
+
+        <p class="fs-3 fw-bold">@Model.Price.ToString("C")</p>
+
+        <form asp-controller="Cart" asp-action="Add" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="productId" value="@Model.Id" />
+            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+            <button type="submit" class="btn btn-primary btn-lg">Добавить в корзину</button>
+        </form>
+    </div>
+</div>
